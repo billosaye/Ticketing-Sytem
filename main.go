@@ -1,6 +1,7 @@
 package main
 
 import (
+	"booking-app/helper"
 	"fmt"
 	"strings"
 )
@@ -23,7 +24,7 @@ func main() {
 		// ----------------------
 
 		// --- Call the Validation Function ---
-		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, userEmail, userTickets)
+		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, userEmail, userTickets, remainingTickets)
 		// ------------------------------------
 
 		if isValidName && isValidEmail && isValidTicketNumber {
@@ -64,8 +65,6 @@ func greetUsers() {
 	fmt.Printf("We have a total of %v tickets, and %v are still available.\n\n", conferenceTickets, remainingTickets)
 }
 
-
-
 // Function to extract first names from the global bookings slice
 func getFirstNames() []string {
 	firstNames := []string{}
@@ -76,7 +75,7 @@ func getFirstNames() []string {
 		}
 	}
 	return firstNames
-}
+} 
 
 // Function to get input from the user
 func getUserInput() (string, string, string, uint) {

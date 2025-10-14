@@ -3,7 +3,6 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strings"
 )
 
 // Package-level (global) variables
@@ -12,39 +11,41 @@ var conferenceName = "Go Conference"
 const conferenceTickets = 50
 
 var remainingTickets uint = 50
-var bookings []string
+var bookings = make([]map[string]string, 0) // Slice of maps to store booking details
 
 // Main function
 func main() {
 	greetUsers()
 
 	for {
-		// --- Get User Input ---
 		firstName, lastName, userEmail, userTickets := getUserInput()
-		// ----------------------
 
-		// --- Call the Validation Function ---
-		isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, userEmail, userTickets, remainingTickets)
-		// ------------------------------------
+		isValidName, isValidEmail, isValidTicketNumber :=
+			helper.ValidateUserInput(firstName, lastName, userEmail, userTickets, remainingTickets)
 
 		if isValidName && isValidEmail && isValidTicketNumber {
-			// Successful booking
 			remainingTickets -= userTickets
-			bookings = append(bookings, firstName+" "+lastName)
+
+			var userData = make(map[string]string)
+			userData["firstName"] = firstName
+			userData["lastName"] = lastName
+			userData["email"] = userEmail
+			userData["numberOfTickets"] = fmt.Sprintf("%v", userTickets)
+
+			bookings = append(bookings, userData)
 
 			fmt.Printf("\nThank you %v %v for booking %v tickets. You will receive a confirmation email at %v.\n",
 				firstName, lastName, userTickets, userEmail)
 			fmt.Printf("%v tickets remaining for %v.\n\n", remainingTickets, conferenceName)
 
 			firstNames := getFirstNames()
-			fmt.Printf("Bookings: %v\n", firstNames)
+			fmt.Printf("Bookings so far: %v\n", firstNames)
 
 			if remainingTickets == 0 {
 				fmt.Println("\nOur conference is fully booked. Come back next year! 🎉")
 				break
 			}
 		} else {
-			// Detailed error messages
 			if !isValidName {
 				fmt.Println("First name or last name must be at least 2 characters long.")
 			}
@@ -59,23 +60,20 @@ func main() {
 	}
 }
 
-// Function to print the initial greeting (uses global variables)
+// Function to print the initial greeting
 func greetUsers() {
 	fmt.Printf("Hello Users, Welcome to our %v Booking Application!\n", conferenceName)
 	fmt.Printf("We have a total of %v tickets, and %v are still available.\n\n", conferenceTickets, remainingTickets)
 }
 
-// Function to extract first names from the global bookings slice
+// Function to extract first names from bookings
 func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		names := strings.Fields(booking)
-		if len(names) > 0 {
-			firstNames = append(firstNames, names[0])
-		}
+		firstNames = append(firstNames, booking["firstName"])
 	}
 	return firstNames
-} 
+}
 
 // Function to get input from the user
 func getUserInput() (string, string, string, uint) {
